@@ -1,7 +1,9 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import User from './dao/models/user.model.js';  // Ajusta la ruta según tu estructura de carpetas
-
+import passport from 'passport';
+import authRoutes from './routes/authRoutes.js'; // Importa las rutas de autenticación
+import './config/passport.js'; // Asegúrate de que la configuración de Passport se cargue antes de las rutas
+import cookieParser from 'cookie-parser';
 // Crear una aplicación Express
 const app = express();
 
@@ -17,6 +19,12 @@ mongoose.connect(mongoURI)
   .catch((error) => {
     console.error('Error al conectar con MongoDB:', error.message);
   });
+
+// Inicializar Passport
+app.use(passport.initialize());  // Asegúrate de inicializar Passport
+
+// Rutas de autenticación
+app.use('/auth', authRoutes); // Usa las rutas de autenticación en el prefijo /auth
 
 // Ruta para crear un nuevo usuario
 app.post('/create-user', async (req, res) => {
@@ -64,3 +72,5 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
 
+
+app.use(cookieParser());
